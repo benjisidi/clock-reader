@@ -5,11 +5,13 @@
 #     Vary the length and thickness of the hands
 
 
-from PIL import Image, ImageDraw
-from matplotlib import pyplot as plt
 import math
 import numpy as np
 from tqdm import tqdm
+from PIL import Image, ImageDraw
+
+# Visualization to confirm correct loading of data
+from matplotlib import pyplot as plt
 
 
 def get_minute_hand_angle(time):
@@ -24,30 +26,30 @@ def create_clock(time, widths=None, tickmarks=False, minute_tail=False):
     # Initialize pixel widths with default values
     if widths is None:
         widths = {}
-    widths = {**{"clock": 5, "minute": 2, "hour": 2, "tickmark": 1}, **widths}
+    widths = {**{"clock": 3, "minute": 2, "hour": 2, "tickmark": 1}, **widths}
 
     # Create empty image and calculate content
-    img = Image.new(mode="L", size=(100, 100))
+    img = Image.new(mode="L", size=(50, 50))
     minute_hand_angle = time[1] * 6
-    minute_hand_x = 50 + 40 * math.sin(math.radians(minute_hand_angle))
-    minute_hand_y = 50 + 40 * math.cos(math.radians(minute_hand_angle + 180))
+    minute_hand_x = 25 + 20 * math.sin(math.radians(minute_hand_angle))
+    minute_hand_y = 25 + 20 * math.cos(math.radians(minute_hand_angle + 180))
     hour_hand_angle = time[0] * 30 + time[1] * 0.5
-    hour_hand_x = 50 + 20 * math.sin(math.radians(hour_hand_angle))
-    hour_hand_y = 50 + 20 * math.cos(math.radians(hour_hand_angle + 180))
+    hour_hand_x = 25 + 10 * math.sin(math.radians(hour_hand_angle))
+    hour_hand_y = 25 + 10 * math.cos(math.radians(hour_hand_angle + 180))
 
     # Draw clock components
     draw = ImageDraw.Draw(img)
-    draw.arc([10, 10, 90, 90], 0, 360, "white", width=widths["clock"])
+    draw.arc([2, 2, 48, 48], 0, 360, "white", width=widths["clock"])
     draw.line(
-        [50, 50, minute_hand_x, minute_hand_y], width=widths["minute"], fill="white"
+        [25, 25, minute_hand_x, minute_hand_y], width=widths["minute"], fill="white"
     )
-    draw.line([50, 50, hour_hand_x, hour_hand_y], width=widths["hour"], fill="white")
+    draw.line([25, 25, hour_hand_x, hour_hand_y], width=widths["hour"], fill="white")
 
     if minute_tail:
-        minute_tail_x = 50 - 10 * math.sin(math.radians(minute_hand_angle))
-        minute_tail_y = 50 - 10 * math.cos(math.radians(minute_hand_angle + 180))
+        minute_tail_x = 25 - 5 * math.sin(math.radians(minute_hand_angle))
+        minute_tail_y = 25 - 5 * math.cos(math.radians(minute_hand_angle + 180))
         draw.line(
-            [50, 50, minute_tail_x, minute_tail_y],
+            [25, 25, minute_tail_x, minute_tail_y],
             width=widths["minute"],
             fill="white",
         )
@@ -55,10 +57,10 @@ def create_clock(time, widths=None, tickmarks=False, minute_tail=False):
     if tickmarks:
         for hour in range(0, 12):
             tickmark_angle = hour * 30
-            tickmark_start_x = 50 + 30 * math.sin(math.radians(tickmark_angle))
-            tickmark_end_x = 50 + 40 * math.sin(math.radians(tickmark_angle))
-            tickmark_start_y = 50 + 30 * math.cos(math.radians(tickmark_angle))
-            tickmark_end_y = 50 + 40 * math.cos(math.radians(tickmark_angle))
+            tickmark_start_x = 25 + 23 * math.sin(math.radians(tickmark_angle))
+            tickmark_end_x = 25 + 18 * math.sin(math.radians(tickmark_angle))
+            tickmark_start_y = 25 + 23 * math.cos(math.radians(tickmark_angle))
+            tickmark_end_y = 25 + 18 * math.cos(math.radians(tickmark_angle))
             draw.line(
                 [tickmark_start_x, tickmark_start_y, tickmark_end_x, tickmark_end_y,],
                 "white",
@@ -67,20 +69,19 @@ def create_clock(time, widths=None, tickmarks=False, minute_tail=False):
     return np.asarray(img, dtype=np.uint8)
 
 
-# clock1 = Clock([5, 30], {"clock": 1}, tickmarks=True, minute_tail=True)
-# clock2 = Clock(
-#     [3, 15], {"hour": 5, "minute": 5, "clock": 5}, tickmarks=True, minute_tail=True
-# )
-
-# clock1.show()
-# clock2.show()
-
 clock_images = []
 clock_labels = []
-with tqdm(total=5 * 5 * 5 * 2 * 2 * 12 * 60) as pbar:
-    for hourWidth in range(1, 6):
-        for minuteWidth in range(1, 6):
-            for clockWidth in range(1, 6):
+
+# test_clock = create_clock([3, 41], tickmarks=True)
+# test_im = Image.fromarray(test_clock)
+# plt.imshow(test_im)
+# plt.show()
+
+
+with tqdm(total=4 * 4 * 4 * 2 * 2 * 12 * 60) as pbar:
+    for hourWidth in range(1, 5):
+        for minuteWidth in range(1, 5):
+            for clockWidth in range(1, 5):
                 for tickmarks in range(2):
                     for minute_tail in range(2):
                         for hour in range(12):
