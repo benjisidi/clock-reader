@@ -3,6 +3,7 @@ from tensorflow import keras
 from sklearn.model_selection import train_test_split
 import numpy as np
 import time
+from os import path
 
 # Visualization to confirm correct loading of data
 from PIL import Image
@@ -29,33 +30,37 @@ end = time.time()
 print(f"Split data in {end -start}s")
 
 # --- Initialize model ---
-model = keras.Sequential()
-model.add(
-    keras.layers.Conv2D(
-        25,
-        (3, 3),
-        activation="relu",
-        input_shape=(50, 50, 1),
-        data_format="channels_last",
+if path.exists("./reader-model"):
+    print("Attempting to load existing model...")
+    model = keras.models.load_model("reader-model")
+else:
+    model = keras.Sequential()
+    model.add(
+        keras.layers.Conv2D(
+            25,
+            (3, 3),
+            activation="relu",
+            input_shape=(50, 50, 1),
+            data_format="channels_last",
+        )
     )
-)
-model.add(keras.layers.MaxPool2D((2, 2)))
-model.add(keras.layers.Conv2D(50, (3, 3), activation="relu"))
-model.add(keras.layers.MaxPool2D((2, 2)))
-model.add(keras.layers.Conv2D(50, (3, 3), activation="relu"))
-model.add(keras.layers.Flatten())
-model.add(keras.layers.Dense(64, activation="relu"))
-model.add(keras.layers.Dense(2))
+    model.add(keras.layers.MaxPool2D((2, 2)))
+    model.add(keras.layers.Conv2D(50, (3, 3), activation="relu"))
+    model.add(keras.layers.MaxPool2D((2, 2)))
+    model.add(keras.layers.Conv2D(50, (3, 3), activation="relu"))
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dense(64, activation="relu"))
+    model.add(keras.layers.Dense(2))
 
-model.summary()
+    model.summary()
 
-model.compile(
-    optimizer="adam", loss="mse", metrics=["accuracy"],
-)
+    model.compile(
+        optimizer="adam", loss="mse", metrics=["accuracy"],
+    )
 
 
 # --- Train model ---
-history = model.fit(clocks_train, labels_train, epochs=1)
+history = model.fit(clocks_train, labels_train, epochs=3)
 
 model.evaluate(clocks_test, labels_test)
 
